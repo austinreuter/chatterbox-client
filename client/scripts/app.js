@@ -2,8 +2,8 @@
 var ChatterBox = function() {
   this.friends = [];
   this.message = '';
-  this.username = 'THEREALRYAN';
-  this.roomname = '';
+  this.username = 'anonimus';
+  this.roomnames = [];
 };
 
 ChatterBox.prototype.init = function() {
@@ -56,8 +56,8 @@ ChatterBox.prototype.fetch = function() {
       console.log('chatterbox: Messages received');
       //console.log('fetched data:', data);
       data.results.forEach((message) => {
-        //console.log(message);
         context.renderMessage(message);
+        context.renderRoom(message.roomname);
       });
       //call renderMessage?
       //room on each {message}? -add- this to our [rooms]
@@ -96,9 +96,12 @@ ChatterBox.prototype.renderMessage = function(message) {
 };
 
 ChatterBox.prototype.renderRoom = function(room) {
-  var room = `<span>${room}</span>`;
+  var newRoom = `<option>${room}</option>`;
   //go through each message, and if it is the room select
-  $('#roomSelect').append(room);
+  if (!this.roomnames.includes(room) && room) {
+    this.roomnames.push(room);
+    $('#roomSelect').append(newRoom);
+  }
 };
 
 ChatterBox.prototype.handleUsernameClick = function(event) {
@@ -114,7 +117,7 @@ ChatterBox.prototype.handleSubmit = function(event) {
   var message = {
     username: this.username,
     text: this.message,
-    roomname: this.roomname
+    roomname: $('#roomSelect').val()
   };
   this.send(JSON.stringify(message));
 
