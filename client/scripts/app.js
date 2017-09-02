@@ -1,30 +1,37 @@
 // YOUR CODE HERE:
 var ChatterBox = function() {
   this.friends = [];
+  this.message = '';
 };
 
 ChatterBox.prototype.init = function() {
-  $(document).ready(() => {
-    //on click on '.username' run handlerUsernameClick
-    //console.log($('#chats .chat .username'));
-    $('body').on('click', '.username', (event) => {
-      this.handleUsernameClick(event);
-    });
+  // $(document).ready(() => {
+  //on click on '.username' run handlerUsernameClick
+  //console.log($('#chats .chat .username'));
+  $('body').on('click', '.username', (event) => {
+    this.handleUsernameClick(event);
+  });
 
-    $('body').on('click', '.submit', (event) => {
-      console.log('hello');
-      this.handleSubmit(event);
-      event.preventDefault();
-    });
+  $('.submit').unbind('submit').bind('submit', (event) => {
+    event.preventDefault();    
+
+    console.log('I AM BEING CALLED');
+    this.handleSubmit(event);
 
   });
+  $('.message').keypress((event) => {
+    this.message = event.target.value;
+    console.log(this.message)
+  });
+
+  // });
 };
 
 ChatterBox.prototype.send = function(message) {
-
+  
   $.ajax({
     // This is the url you should use to communicate with the parse API server.
-    url: 'http://parse.CAMPUS.hackreactor.com/chatterbox/classes/messages',
+    url: this.server,
     type: 'POST',
     data: message,
     contentType: 'application/json',
@@ -43,7 +50,7 @@ ChatterBox.prototype.fetch = function() {
 
   $.ajax({
     // This is the url you should use to communicate with the parse API server.
-    url: 'http://parse.CAMPUS.hackreactor.com/chatterbox/classes/messages',
+    url: this.server,
     type: 'GET',
     contentType: 'application/json',
     success: function (data) {
@@ -85,13 +92,12 @@ ChatterBox.prototype.handleUsernameClick = function(event) {
 };
 
 ChatterBox.prototype.handleSubmit = function(event) {
-  console.log('event');
-  
-  /*$.ajax({
+  console.log('event', event);
+  $.ajax({
     // This is the url you should use to communicate with the parse API server.
-    url: 'http://parse.CAMPUS.hackreactor.com/chatterbox/classes/messages',
+    url: this.server,
     type: 'POST',
-    data: '',
+    data: message,
     contentType: 'application/json',
     success: function (data) {
       console.log('chatterbox: Message sent');
@@ -100,12 +106,14 @@ ChatterBox.prototype.handleSubmit = function(event) {
       // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
       console.error('chatterbox: Failed to send message', data);
     }
-  });*/
+  });
 };
 
 var app = new ChatterBox();
 app.server = 'http://parse.CAMPUS.hackreactor.com/chatterbox/classes/messages';
-app.init();
+$(document).ready(() => {
+  app.init();
+});
 
 
 
