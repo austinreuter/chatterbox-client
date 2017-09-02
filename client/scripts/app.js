@@ -11,19 +11,17 @@ ChatterBox.prototype.init = function() {
   $('body').on('click', '.username', (event) => {
     this.handleUsernameClick(event);
   });
-
-  $('.submit').unbind('submit').bind('submit', (event) => {
+  var context = this;
+  $('.submit').unbind('submit').bind('submit', function(event) {
     event.preventDefault();    
 
     console.log('I AM BEING CALLED');
-    this.handleSubmit(event);
-
+    context.handleSubmit(event);
+    
   });
-  $('.message').keypress((event) => {
-    this.message = event.target.value;
-    console.log(this.message)
+  $('.message').keyup((event) => {
+    this.message += event.target.value;
   });
-
   // });
 };
 
