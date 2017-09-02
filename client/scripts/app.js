@@ -4,6 +4,7 @@ var ChatterBox = function() {
   this.message = '';
   this.username = 'anonimus';
   this.roomnames = [];
+  this.messages = [];
 };
 
 ChatterBox.prototype.init = function() {
@@ -14,12 +15,14 @@ ChatterBox.prototype.init = function() {
   var context = this;
   $('#send').unbind('submit').bind('submit', function(event) {
     event.preventDefault();    
-    console.log('I AM BEING CALLED');
     context.handleSubmit(event);
     
   });
   $('.message').keyup((event) => {
     this.message = event.target.value;
+  });
+  $('.selectRoom').on('click', (event) => {
+    this.filterRooms();
   });
 
   //room on click, go through rooms and render room;
@@ -54,13 +57,11 @@ ChatterBox.prototype.fetch = function() {
     data: {order: '-createdAt'},
     success: function (data) {
       console.log('chatterbox: Messages received');
-      //console.log('fetched data:', data);
+      context.messages = data.results;
       data.results.forEach((message) => {
         context.renderMessage(message);
         context.renderRoom(message.roomname);
       });
-      //call renderMessage?
-      //room on each {message}? -add- this to our [rooms]
     },
     error: function (data) {
       // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
@@ -95,9 +96,20 @@ ChatterBox.prototype.renderMessage = function(message) {
   $('#chats').append(chat);
 };
 
+ChatterBox.prototype.prependMessage = function(message) {
+  var username = encodeURIComponent(message.username);
+  var text = encodeURIComponent(message.text);
+  var roomname = encodeURIComponent(message.roomname);
+  var name = `<span class="username">${username}</span>`;
+  var message = `<span class="message"> ${text} </span>`;
+  var room = `<span class="room"> ${roomname} </span>`;
+  var chat = `<div><span class="chat">${name}: ${message} ${room}</span> <br/><br/></div>`;
+
+  $('#chats').prepend(chat);
+};
+
 ChatterBox.prototype.renderRoom = function(room) {
   var newRoom = `<option>${room}</option>`;
-  //go through each message, and if it is the room select
   if (!this.roomnames.includes(room) && room) {
     this.roomnames.push(room);
     $('#roomSelect').append(newRoom);
@@ -112,30 +124,23 @@ ChatterBox.prototype.handleUsernameClick = function(event) {
 };
 
 ChatterBox.prototype.handleSubmit = function(event) {
-  console.log('event', event);
-  console.log('this', this);
   var message = {
     username: this.username,
     text: this.message,
     roomname: $('#roomSelect').val()
   };
   this.send(JSON.stringify(message));
+  this.prependMessage(message);
+};
 
-
-  /*
-  $.ajax({
-    url: this.server,
-    type: 'POST',
-    data: message,
-    contentType: 'application/json',
-    success: function (data) {
-      console.log('chatterbox: Message sent');
-    },
-    error: function (data) {
-      console.error('chatterbox: Failed to send message', data);
+ChatterBox.prototype.filterRooms = function() {
+  this.clearMessages();
+  this.messages.forEach(message => {
+    if ($('#roomSelect').val() === message.roomname) {
+      this.renderMessage(message);
     }
-  });*/
-  //this.message = '';
+  });
+
 };
 
 var app = new ChatterBox();
