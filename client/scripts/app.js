@@ -2,6 +2,8 @@
 var ChatterBox = function() {
   this.friends = [];
   this.message = '';
+  this.username = 'THEREALRYAN';
+  this.roomname = '';
 };
 
 ChatterBox.prototype.init = function() {
@@ -10,15 +12,14 @@ ChatterBox.prototype.init = function() {
     this.handleUsernameClick(event);
   });
   var context = this;
-  $('.submit').unbind('submit').bind('submit', function(event) {
+  $('#send').unbind('submit').bind('submit', function(event) {
     event.preventDefault();    
-
     console.log('I AM BEING CALLED');
     context.handleSubmit(event);
     
   });
   $('.message').keyup((event) => {
-    this.message += event.target.value;
+    this.message = event.target.value;
   });
 
   //room on click, go through rooms and render room;
@@ -26,15 +27,6 @@ ChatterBox.prototype.init = function() {
 };
 
 ChatterBox.prototype.send = function(message) {
-  //stringify object values for message
-  // var usernameString = JSON.stringify(message.username);
-  // var textString = JSON.stringify(message.text);
-  // var roomnameString = JSON.stringify(message.roomname);
-  // message = {
-  //   username: usernameString,
-  //   message: textString,
-  //   roomname: roomnameString
-  // };
   
   $.ajax({
     url: this.server,
@@ -62,7 +54,7 @@ ChatterBox.prototype.fetch = function() {
     data: {order: '-createdAt'},
     success: function (data) {
       console.log('chatterbox: Messages received');
-      console.log('fetched data:', data);
+      //console.log('fetched data:', data);
       data.results.forEach((message) => {
         //console.log(message);
         context.renderMessage(message);
@@ -84,7 +76,7 @@ ChatterBox.prototype.clearMessages = function() {
 };
 
 ChatterBox.prototype.renderMessage = function(message) {
-  console.log('renderMessage', message);
+  //console.log('renderMessage', message);
   var username = encodeURIComponent(message.username);
   var text = encodeURIComponent(message.text);
   var roomname = encodeURIComponent(message.roomname);
@@ -98,7 +90,7 @@ ChatterBox.prototype.renderMessage = function(message) {
   var name = `<span class="username">${username}</span>`;
   var message = `<span class="message"> ${text} </span>`;
   var room = `<span class="room"> ${roomname} </span>`;
-  var chat = `<span class="chat">${name}: ${message} ${room}</span> <br/><br/>`;
+  var chat = `<div><span class="chat">${name}: ${message} ${room}</span> <br/><br/></div>`;
 
   $('#chats').append(chat);
 };
@@ -110,11 +102,24 @@ ChatterBox.prototype.renderRoom = function(room) {
 };
 
 ChatterBox.prototype.handleUsernameClick = function(event) {
-  this.friends.push(event.target.innerHTML);
+  if (!this.friends.includes(event.target.innerHTML)) {
+    this.friends.push(event.target.innerHTML);
+  }
+  console.log(this.friends);
 };
 
 ChatterBox.prototype.handleSubmit = function(event) {
   console.log('event', event);
+  console.log('this', this);
+  var message = {
+    username: this.username,
+    text: this.message,
+    roomname: this.roomname
+  };
+  this.send(JSON.stringify(message));
+
+
+  /*
   $.ajax({
     url: this.server,
     type: 'POST',
@@ -126,7 +131,8 @@ ChatterBox.prototype.handleSubmit = function(event) {
     error: function (data) {
       console.error('chatterbox: Failed to send message', data);
     }
-  });
+  });*/
+  //this.message = '';
 };
 
 var app = new ChatterBox();
