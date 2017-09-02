@@ -6,14 +6,18 @@ var ChatterBox = function() {
 ChatterBox.prototype.init = function() {
   $(document).ready(() => {
     //on click on '.username' run handlerUsernameClick
-    console.log('hi');
     //console.log($('#chats .chat .username'));
     $('body').on('click', '.username', (event) => {
       this.handleUsernameClick(event);
     });
+
+    $('body').on('click', '.submit', (event) => {
+      console.log('hello');
+      this.handleSubmit(event);
+      event.preventDefault();
+    });
+
   });
-
-
 };
 
 ChatterBox.prototype.send = function(message) {
@@ -78,9 +82,25 @@ ChatterBox.prototype.renderRoom = function(room) {
 
 ChatterBox.prototype.handleUsernameClick = function(event) {
   this.friends.push(event.target.innerHTML);
-  console.log('friends after name click', this.friends);
-  //console.log('event', event, 'this', this);
+};
 
+ChatterBox.prototype.handleSubmit = function(event) {
+  console.log('event');
+  
+  /*$.ajax({
+    // This is the url you should use to communicate with the parse API server.
+    url: 'http://parse.CAMPUS.hackreactor.com/chatterbox/classes/messages',
+    type: 'POST',
+    data: '',
+    contentType: 'application/json',
+    success: function (data) {
+      console.log('chatterbox: Message sent');
+    },
+    error: function (data) {
+      // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
+      console.error('chatterbox: Failed to send message', data);
+    }
+  });*/
 };
 
 var app = new ChatterBox();
