@@ -91,7 +91,7 @@ ChatterBox.prototype.renderMessage = function(message) {
   var name = `<span class="username">${username}</span>`;
   var message = `<span class="message"> ${text} </span>`;
   var room = `<span class="room"> ${roomname} </span>`;
-  var chat = `<div><span class="chat">${name}: ${message} ${room}</span> <br/><br/></div>`;
+  var chat = `<div class="chat">${name}: ${message} ${room} <br/> <br/> </div>`;
 
   $('#chats').append(chat);
 };
@@ -119,8 +119,12 @@ ChatterBox.prototype.renderRoom = function(room) {
 ChatterBox.prototype.handleUsernameClick = function(event) {
   if (!this.friends.includes(event.target.innerHTML)) {
     this.friends.push(event.target.innerHTML);
+    var div = $("#chats").find(`div:contains(${event.target.innerHTML})`);
+
+    for (var i = 0; i < div.length; i++) {
+      $(div[i]).css('font-weight', 'Bold');
+    }
   }
-  console.log(this.friends);
 };
 
 ChatterBox.prototype.handleSubmit = function(event) {
