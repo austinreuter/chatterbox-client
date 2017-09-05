@@ -123,6 +123,10 @@ class ChatterBox {
 
   filterRooms() {
     this.clearMessages();
+    if ($('#roomSelect').val()=== 'default') {
+      this.fetch();
+      return;
+    }
     this.messages.forEach(message => {
       if ($('#roomSelect').val() === message.roomname) {
         this.renderMessage(message);
