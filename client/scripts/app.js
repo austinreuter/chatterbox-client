@@ -3,7 +3,7 @@ class ChatterBox {
   constructor() {
     this.friends = [];
     this.message = '';
-    this.username = 'anonimus';
+    this.username = '';
     this.roomnames = [];
     this.messages = [];
   }
@@ -22,6 +22,10 @@ class ChatterBox {
     });
     $('.selectRoom').on('click', event => {
       this.filterRooms();
+    });
+    $('.fetch').on('click', event => {
+      this.clearMessages();
+      this.fetch();
     });
   }
 

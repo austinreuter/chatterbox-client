@@ -90,4 +90,11 @@ form input[type=text] {
     color: #fff;
     background-color: #0090da;
 }
+.padding {
+    padding: 10px;
+}
+.fetch {
+    background-color: grey;
+    padding: 10px;
+}
 
