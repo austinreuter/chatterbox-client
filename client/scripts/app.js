@@ -1,14 +1,71 @@
 
-var ChatterBox = function() {
-  this.friends = [];
-  this.message = '';
-  this.username = 'anonimus';
-  this.roomnames = [];
-  this.messages = [];
+class ChatterBox {
+  constructor() {
+    this.friends = [];
+    this.message = '';
+    this.username = 'anonimus';
+    this.roomnames = [];
+    this.messages = [];
+  }
+
+  init() {
+    $('body').on('click', '.username', (event) => {
+    this.handleUsernameClick(event);
+    });
+    $('#send').unbind('submit').bind('submit', event => {
+      event.preventDefault();    
+      this.handleSubmit(event);
+      
+    });
+    $('.message').keyup(event => {
+      this.message = event.target.value;
+    });
+    $('.selectRoom').on('click', event => {
+      this.filterRooms();
+    });
+  }
+
+  send(message) {
+    $.ajax({
+      url: this.server,
+      type: 'POST',
+      data: message,
+      contentType: 'application/json',
+      success: function (data) {
+        console.log('chatterbox: Message sent');
+      },
+      error: function (data) {
+        // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
+        console.error('chatterbox: Failed to send message', data);
+      }
+    });
+  }
+
+  fetch() {
+    $.ajax({
+      // This is the url you should use to communicate with the parse API server.
+      url: this.server,
+      type: 'GET',
+      contentType: 'application/json',
+      data: {order: '-createdAt'},
+      success: function (data) {
+        console.log('chatterbox: Messages received');
+        context.messages = data.results;
+        data.results.forEach((message) => {
+          context.renderMessage(message);
+          context.renderRoom(message.roomname);
+        });
+      },
+      error: function (data) {
+        // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
+        console.error('chatterbox: Failed to receive messages', data);
+      }
+    });
+  }
+
 };
 
-ChatterBox.prototype.init = function() {
-
+/*ChatterBox.prototype.init => {
   $('body').on('click', '.username', (event) => {
     this.handleUsernameClick(event);
   });
@@ -29,7 +86,7 @@ ChatterBox.prototype.init = function() {
 
 };
 
-ChatterBox.prototype.send = function(message) {
+ChatterBox.prototype.send message => {
   
   $.ajax({
     url: this.server,
@@ -46,7 +103,7 @@ ChatterBox.prototype.send = function(message) {
   });
 }
 
-ChatterBox.prototype.fetch = function() {
+ChatterBox.prototype.fetch => {
   var context = this;
   $.ajax({
     // This is the url you should use to communicate with the parse API server.
@@ -68,8 +125,9 @@ ChatterBox.prototype.fetch = function() {
     }
   });
 }
+*/
 
-ChatterBox.prototype.clearMessages = function() {
+ChatterBox.prototype.clearMessages => {
   // access chat dom node; go through each child/chat, delete it;
   $('#chats').empty();
 };
@@ -94,7 +152,7 @@ ChatterBox.prototype.renderMessage = function(message) {
   $('#chats').append(chat);
 };
 
-ChatterBox.prototype.prependMessage = function(message) {
+ChatterBox.prototype.prependMessage message => {
   var username = encodeURIComponent(message.username);
   var text = encodeURIComponent(message.text);
   var roomname = encodeURIComponent(message.roomname);
@@ -106,7 +164,7 @@ ChatterBox.prototype.prependMessage = function(message) {
   $('#chats').prepend(chat);
 };
 
-ChatterBox.prototype.renderRoom = function(room) {
+ChatterBox.prototype.renderRoom room => {
   var newRoom = `<option>${room}</option>`;
   if (!this.roomnames.includes(room) && room) {
     this.roomnames.push(room);
@@ -114,7 +172,7 @@ ChatterBox.prototype.renderRoom = function(room) {
   }
 };
 
-ChatterBox.prototype.handleUsernameClick = function(event) {
+ChatterBox.prototype.handleUsernameClick event => {
   if (!this.friends.includes(event.target.innerHTML)) {
     this.friends.push(event.target.innerHTML);
     var div = $("#chats").find(`div:contains(${event.target.innerHTML})`);
@@ -125,7 +183,7 @@ ChatterBox.prototype.handleUsernameClick = function(event) {
   }
 };
 
-ChatterBox.prototype.handleSubmit = function(event) {
+ChatterBox.prototype.handleSubmit event => {
   var message = {
     username: this.username,
     text: this.message,
@@ -135,22 +193,22 @@ ChatterBox.prototype.handleSubmit = function(event) {
   this.prependMessage(message);
 };
 
-ChatterBox.prototype.filterRooms = function() {
+ChatterBox.prototype.filterRooms => {
   this.clearMessages();
   this.messages.forEach(message => {
     if ($('#roomSelect').val() === message.roomname) {
       this.renderMessage(message);
     }
   });
-
 };
 
 var app = new ChatterBox();
 app.server = 'http://parse.sfm8.hackreactor.com/chatterbox/classes/messages';
-$(document).ready(() => {
 
+$(document).ready(() => {
   app.init();
   app.fetch();
+
 });
 
 
